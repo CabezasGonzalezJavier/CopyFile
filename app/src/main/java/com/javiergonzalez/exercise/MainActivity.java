@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.javiergonzalez.exercise.adapters.ListAdapter;
+import com.javiergonzalez.exercise.utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +44,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-//        mProgressDialog.setMessage(getString(R.string.activity_detail_sending));
 
         Button origitnButton = (Button) findViewById(R.id.button_origin);
         origitnButton.setOnClickListener(this);
@@ -62,32 +62,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
         int type=0;
         switch (v.getId()) {
             case R.id.button_origin:
-                mOriginPath = choosen(TYPE_ORIGIN);
+                choosen(TYPE_ORIGIN);
                 break;
             case R.id.button_destination:
-                mDestinationPath = choosen(TYPE_DESTINO);
+                choosen(TYPE_DESTINO);
                 break;
             case R.id.button_copy:
                 if (mOriginPath != null && mDestinationPath != null){
 
-                    copyFileOrDirectory(mOriginPath,mDestinationPath);
+                    Utils.copyFileOrDirectory(mOriginPath, mDestinationPath);
 
-
-//                    File fileOrigin = new File(getFilesDir(), mOriginPath);
-//                    File fileDestine = new File(getFilesDir(), mDestinationPath);
-//                    try {
-//                        copy(fileOrigin, fileDestine);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
                 }else {
                     Toast.makeText(this, getString(R.string.error), Toast.LENGTH_LONG).show();
                 }
         }
     }
 
-    public String choosen(final int type) {
-        final String[] result = {new String()};
+    public void choosen(final int type) {
         //Create FileOpenDialog and register a callback
         SimpleFileDialog FolderChooseDialog =  new SimpleFileDialog(MainActivity.this, "FolderChoose",
                 new SimpleFileDialog.SimpleFileDialogListener()
@@ -96,15 +87,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     public void onChosenDir(String chosenDir)
                     {
                         // The code in this function will be executed when the dialog OK button is pushed
-                        result[0] = chosenDir;
                         Toast.makeText(MainActivity.this, "Chosen FileOpenDialog File: " +
-                                result[0], Toast.LENGTH_LONG).show();
+                                chosenDir, Toast.LENGTH_LONG).show();
                         if (type == TYPE_DESTINO) {
-                            mDestinationTextView.setText(result[0]);
-                            mDestinationPath = result [0];
+                            mDestinationTextView.setText(chosenDir);
+                            mDestinationPath = chosenDir;
                         } else {
-                            mOriginTextView.setText(result[0]);
-                            mOriginPath = result [0];
+                            mOriginTextView.setText(chosenDir);
+                            mOriginPath = chosenDir;
                         }
                     }
                 });
@@ -112,76 +102,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         FolderChooseDialog.chooseFile_or_Dir();
 
 
-
-
-        return result[0];
-
-    }
-
-    public void copy(File src, File dst) throws IOException {
-        InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dst);
-        mProgressDialog.show();
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-        mProgressDialog.cancel();
-    }
-
-
-    public static void copyFileOrDirectory(String srcDir, String dstDir) {
-
-        try {
-            File src = new File(srcDir);
-            File dst = new File(dstDir, src.getName());
-
-            if (src.isDirectory()) {
-
-                String files[] = src.list();
-                int filesLength = files.length;
-                for (int i = 0; i < filesLength; i++) {
-                    String src1 = (new File(src, files[i]).getPath());
-                    String dst1 = dst.getPath();
-                    copyFileOrDirectory(src1, dst1);
-
-                }
-            } else {
-                copyFile(src, dst);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void copyFile(File sourceFile, File destFile) throws IOException {
-        if (!destFile.getParentFile().exists())
-            destFile.getParentFile().mkdirs();
-
-        if (!destFile.exists()) {
-            destFile.createNewFile();
-        }
-
-        FileChannel source = null;
-        FileChannel destination = null;
-
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
-        }
     }
 
 }
