@@ -1,5 +1,11 @@
 package com.javiergonzalez.exercise.utils;
 
+import android.content.Context;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import com.javiergonzalez.exercise.FoldersFilesListener;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,7 +17,8 @@ import java.nio.channels.FileChannel;
  */
 public class Utils {
 
-    public static void copyFileOrDirectory(String srcDir, String dstDir) {
+
+    public static void copyFileOrDirectory(Context context, ScrollView mScrollView,String srcDir, String dstDir) {
 
         try {
             File src = new File(srcDir);
@@ -24,20 +31,27 @@ public class Utils {
                 for (int i = 0; i < filesLength; i++) {
                     String src1 = (new File(src, files[i]).getPath());
                     String dst1 = dst.getPath();
-                    copyFileOrDirectory(src1, dst1);
+                    copyFileOrDirectory(context, mScrollView, src1, dst1);
 
                 }
             } else {
-                copyFile(src, dst);
+                copyFile(context, mScrollView, src, dst);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void copyFile(File sourceFile, File destFile) throws IOException {
+    public static void copyFile(Context context, ScrollView scrollView, File sourceFile, File destFile) throws IOException {
         if (!destFile.getParentFile().exists())
             destFile.getParentFile().mkdirs();
+
+//        mFolderFileListener.paintFolderFile(sourceFile.toString());
+
+
+        TextView textView= new TextView(context);
+        textView.setText(sourceFile.toString());
+        scrollView.addView(textView);
 
         if (!destFile.exists()) {
             destFile.createNewFile();

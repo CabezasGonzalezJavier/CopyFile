@@ -3,28 +3,28 @@ package com.javiergonzalez.exercise;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.javiergonzalez.exercise.adapters.ListAdapter;
+import com.javiergonzalez.exercise.utils.SimpleFileDialog;
 import com.javiergonzalez.exercise.utils.Utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener, FoldersFilesListener {
+
+
+    ScrollView mScrollView;
+    List<String> mList;
+    ArrayAdapter<String> mAdapter;
+
     ListView mListView;
     TextView mOriginTextView;
     TextView mDestinationTextView;
@@ -34,6 +34,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     final static int TYPE_DESTINO = 2;
     final static int TYPE_ORIGIN = 1;
+
+    public FoldersFilesListener mFolderFileListener;
 
     private ProgressDialog mProgressDialog;
 
@@ -55,6 +57,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         Button copy = (Button) findViewById(R.id.button_copy);
         copy.setOnClickListener(this);
+        mScrollView = (ScrollView) findViewById(R.id.scrollView);
+//        mListView = (ListView) findViewById(R.id.listview);
+//
+//        mList = new ArrayList<String>();
+
+//        showList();
+    }
+
+    public void showList() {
+        mAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,mList);
+        mListView.setAdapter(mAdapter);
+
     }
 
     @Override
@@ -70,7 +85,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.button_copy:
                 if (mOriginPath != null && mDestinationPath != null){
 
-                    Utils.copyFileOrDirectory(mOriginPath, mDestinationPath);
+                    Utils.copyFileOrDirectory(this,mScrollView, mOriginPath, mDestinationPath);
 
                 }else {
                     Toast.makeText(this, getString(R.string.error), Toast.LENGTH_LONG).show();
@@ -104,4 +119,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     }
 
+    @Override
+    public void paintFolderFile(String stringList) {
+        mList.add(stringList);
+        mAdapter.notifyDataSetChanged();
+        showList();
+    }
 }
