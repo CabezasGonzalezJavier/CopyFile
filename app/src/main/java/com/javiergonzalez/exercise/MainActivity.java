@@ -92,6 +92,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Fold
         }
     }
 
+    /**
+     * Chosen File in origin and destination and register a callback.
+     * @param type
+     */
     public void chosen(final int type) {
         //Create FileOpenDialog and register a callback
         SimpleFileDialog FolderChooseDialog = new SimpleFileDialog(MainActivity.this, "FolderChoose",
@@ -117,6 +121,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Fold
         FolderChooseDialog.chooseFile_or_Dir();
     }
 
+    /**
+     * Painted the folders name and the files name in list
+     * @param stringList
+     */
     @Override
     public void paintFolderFile(final String stringList) {
 

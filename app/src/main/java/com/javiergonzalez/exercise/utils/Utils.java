@@ -25,6 +25,11 @@ public class Utils {
                 copy(srcDir, dstDir);
             }
 
+            /**
+             * copied directory from origin to destination
+             * @param srcDir
+             * @param dstDir
+             */
             private void copy(String srcDir, String dstDir) {
                 try {
 
@@ -53,6 +58,12 @@ public class Utils {
                 }
             }
 
+            /**
+             * Copied file in directory from origin to destination
+             * @param sourceFile
+             * @param destFile
+             * @throws IOException
+             */
             public void copyFile(File sourceFile, File destFile) throws IOException {
                 if (!destFile.getParentFile().exists())
                     destFile.getParentFile().mkdirs();
