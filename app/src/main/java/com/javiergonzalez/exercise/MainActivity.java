@@ -2,6 +2,7 @@ package com.javiergonzalez.exercise;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -11,9 +12,15 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.javiergonzalez.exercise.adapters.ListAdapter;
 import com.javiergonzalez.exercise.utils.SimpleFileDialog;
 import com.javiergonzalez.exercise.utils.Utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +30,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Fold
 
     ScrollView mScrollView;
     List<String> mList;
-    ArrayAdapter<String> mAdapter;
+    ListAdapter mAdapter;
 
     ListView mListView;
     TextView mOriginTextView;
@@ -35,17 +42,11 @@ public class MainActivity extends Activity implements View.OnClickListener, Fold
     final static int TYPE_DESTINO = 2;
     final static int TYPE_ORIGIN = 1;
 
-    public FoldersFilesListener mFolderFileListener;
-
-    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setCancelable(false);
 
         Button origitnButton = (Button) findViewById(R.id.button_origin);
         origitnButton.setOnClickListener(this);
@@ -57,72 +58,76 @@ public class MainActivity extends Activity implements View.OnClickListener, Fold
 
         Button copy = (Button) findViewById(R.id.button_copy);
         copy.setOnClickListener(this);
-        mScrollView = (ScrollView) findViewById(R.id.scrollView);
-//        mListView = (ListView) findViewById(R.id.listview);
-//
-//        mList = new ArrayList<String>();
 
-//        showList();
-    }
 
-    public void showList() {
-        mAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,mList);
+        mListView = (ListView) findViewById(R.id.listview);
+        mListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        mListView.setStackFromBottom(true);
+
+        mList = new ArrayList<String>();
+        mAdapter = new ListAdapter(this, mList);
         mListView.setAdapter(mAdapter);
-
     }
+
 
     @Override
     public void onClick(View v) {
-        int type=0;
+        int type = 0;
         switch (v.getId()) {
             case R.id.button_origin:
-                choosen(TYPE_ORIGIN);
+                chosen(TYPE_ORIGIN);
                 break;
             case R.id.button_destination:
-                choosen(TYPE_DESTINO);
+                chosen(TYPE_DESTINO);
                 break;
             case R.id.button_copy:
-                if (mOriginPath != null && mDestinationPath != null){
+                if (mOriginPath != null && mDestinationPath != null) {
+                    mList.clear();
+                    mAdapter.notifyDataSetChanged();
+                    Utils.copyFileOrDirectory(this, mOriginPath, mDestinationPath);
 
-                    Utils.copyFileOrDirectory(this,mScrollView, mOriginPath, mDestinationPath);
-
-                }else {
+                } else {
                     Toast.makeText(this, getString(R.string.error), Toast.LENGTH_LONG).show();
                 }
         }
     }
 
-    public void choosen(final int type) {
+    public void chosen(final int type) {
         //Create FileOpenDialog and register a callback
-        SimpleFileDialog FolderChooseDialog =  new SimpleFileDialog(MainActivity.this, "FolderChoose",
-                new SimpleFileDialog.SimpleFileDialogListener()
-                {
+        SimpleFileDialog FolderChooseDialog = new SimpleFileDialog(MainActivity.this, "FolderChoose",
+                new SimpleFileDialog.SimpleFileDialogListener() {
                     @Override
-                    public void onChosenDir(String chosenDir)
-                    {
+                    public void onChosenDir(String chosenDir) {
                         // The code in this function will be executed when the dialog OK button is pushed
                         Toast.makeText(MainActivity.this, "Chosen FileOpenDialog File: " +
                                 chosenDir, Toast.LENGTH_LONG).show();
-                        if (type == TYPE_DESTINO) {
-                            mDestinationTextView.setText(chosenDir);
-                            mDestinationPath = chosenDir;
-                        } else {
-                            mOriginTextView.setText(chosenDir);
-                            mOriginPath = chosenDir;
+                        switch (type) {
+                            case TYPE_DESTINO:
+                                mDestinationTextView.setText(chosenDir);
+                                mDestinationPath = chosenDir;
+                                break;
+                            case TYPE_ORIGIN:
+                                mOriginTextView.setText(chosenDir);
+                                mOriginPath = chosenDir;
+                                break;
                         }
                     }
                 });
 
         FolderChooseDialog.chooseFile_or_Dir();
-
-
     }
 
     @Override
-    public void paintFolderFile(String stringList) {
-        mList.add(stringList);
-        mAdapter.notifyDataSetChanged();
-        showList();
+    public void paintFolderFile(final String stringList) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mList.add(stringList);
+                mAdapter.setListData(mList);
+                mAdapter.notifyDataSetChanged();
+                mListView.requestLayout();
+            }
+        });
     }
 }

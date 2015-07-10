@@ -1,9 +1,5 @@
 package com.javiergonzalez.exercise.utils;
 
-import android.content.Context;
-import android.widget.ScrollView;
-import android.widget.TextView;
-
 import com.javiergonzalez.exercise.FoldersFilesListener;
 
 import java.io.File;
@@ -18,59 +14,72 @@ import java.nio.channels.FileChannel;
 public class Utils {
 
 
-    public static void copyFileOrDirectory(Context context, ScrollView mScrollView,String srcDir, String dstDir) {
+    static FoldersFilesListener sListener;
 
-        try {
-            File src = new File(srcDir);
-            File dst = new File(dstDir, src.getName());
+    public static void copyFileOrDirectory(FoldersFilesListener listener, final String srcDir, final String dstDir) {
 
-            if (src.isDirectory()) {
+        sListener = listener;
 
-                String files[] = src.list();
-                int filesLength = files.length;
-                for (int i = 0; i < filesLength; i++) {
-                    String src1 = (new File(src, files[i]).getPath());
-                    String dst1 = dst.getPath();
-                    copyFileOrDirectory(context, mScrollView, src1, dst1);
+        new Thread(new Runnable() {
+            public void run() {
+                copy(srcDir, dstDir);
+            }
 
+            private void copy(String srcDir, String dstDir) {
+                try {
+
+                    File src = new File(srcDir);
+                    File dst = new File(dstDir, src.getName());
+
+                    //Showed directory in Progress
+                    sListener.paintFolderFile(srcDir);
+
+                    //Check is a directory or file
+                    if (src.isDirectory()) {
+
+                        String files[] = src.list();
+                        int filesLength = files.length;
+                        for (int i = 0; i < filesLength; i++) {
+                            String src1 = (new File(src, files[i]).getPath());
+                            String dst1 = dst.getPath();
+                            copy(src1, dst1);
+
+                        }
+                    } else {
+                        copyFile(src, dst);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } else {
-                copyFile(context, mScrollView, src, dst);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void copyFile(Context context, ScrollView scrollView, File sourceFile, File destFile) throws IOException {
-        if (!destFile.getParentFile().exists())
-            destFile.getParentFile().mkdirs();
+            public void copyFile(File sourceFile, File destFile) throws IOException {
+                if (!destFile.getParentFile().exists())
+                    destFile.getParentFile().mkdirs();
 
-//        mFolderFileListener.paintFolderFile(sourceFile.toString());
+                if (!destFile.exists()) {
+                    destFile.createNewFile();
+                }
 
+                FileChannel source = null;
+                FileChannel destination = null;
 
-        TextView textView= new TextView(context);
-        textView.setText(sourceFile.toString());
-        scrollView.addView(textView);
+                try {
+                    source = new FileInputStream(sourceFile).getChannel();
+                    destination = new FileOutputStream(destFile).getChannel();
+                    destination.transferFrom(source, 0, source.size());
 
-        if (!destFile.exists()) {
-            destFile.createNewFile();
-        }
-
-        FileChannel source = null;
-        FileChannel destination = null;
-
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
+                    // Showed File in progress
+                    sListener.paintFolderFile(sourceFile.toString());
+                } finally {
+                    if (source != null) {
+                        source.close();
+                    }
+                    if (destination != null) {
+                        destination.close();
+                    }
+                }
             }
-            if (destination != null) {
-                destination.close();
-            }
-        }
+        }).start();
     }
 }

@@ -48,9 +48,7 @@ public class SimpleFileDialog {
     private SimpleFileDialogListener m_SimpleFileDialogListener = null;
     private ArrayAdapter<String> m_listAdapter = null;
 
-    //////////////////////////////////////////////////////
     // Callback interface for selected directory
-    //////////////////////////////////////////////////////
     public interface SimpleFileDialogListener {
         public void onChosenDir(String chosenDir);
     }
@@ -71,20 +69,16 @@ public class SimpleFileDialog {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////
     // chooseFile_or_Dir() - load directory chooser dialog for initial
     // default sdcard directory
-    ///////////////////////////////////////////////////////////////////////
     public void chooseFile_or_Dir() {
         // Initial directory is sdcard directory
         if (m_dir.equals("")) chooseFile_or_Dir(m_sdcardDirectory);
         else chooseFile_or_Dir(m_dir);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
     // chooseFile_or_Dir(String dir) - load directory chooser dialog for initial
     // input 'dir' directory
-    ////////////////////////////////////////////////////////////////////////////////
     public void chooseFile_or_Dir(String dir) {
         File dirFile = new File(dir);
         if (!dirFile.exists() || !dirFile.isDirectory()) {
@@ -189,19 +183,13 @@ public class SimpleFileDialog {
         return dirs;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////                                   START DIALOG DEFINITION                                    //////
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Started dialog defination
     private AlertDialog.Builder createDirectoryChooserDialog(String title, List<String> listItems,
                                                              DialogInterface.OnClickListener onClickListener) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(m_context);
-        ////////////////////////////////////////////////
-        // Create title text showing file select type //
-        ////////////////////////////////////////////////
+        // Create title text showing file select type
         m_titleView1 = new TextView(m_context);
         m_titleView1.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        //m_titleView1.setTextAppearance(m_context, android.R.style.TextAppearance_Large);
-        //m_titleView1.setTextColor( m_context.getResources().getColor(android.R.color.black) );
 
         if (Select_type == FileOpen) m_titleView1.setText("Open:");
         if (Select_type == FileSave) m_titleView1.setText("Save As:");
@@ -219,9 +207,7 @@ public class SimpleFileDialog {
 
 
         if (Select_type == FolderChoose || Select_type == FileSave) {
-            ///////////////////////////////
-            // Create New Folder Button  //
-            ///////////////////////////////
+            // Create New Folder Button
             Button newDirButton = new Button(m_context);
             newDirButton.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
             newDirButton.setText("New Folder");
@@ -254,9 +240,7 @@ public class SimpleFileDialog {
             titleLayout1.addView(newDirButton);
         }
 
-        /////////////////////////////////////////////////////
-        // Create View with folder path and entry text box //
-        /////////////////////////////////////////////////////
+        // Create View with folder path and entry text box
         LinearLayout titleLayout = new LinearLayout(m_context);
         titleLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -274,9 +258,7 @@ public class SimpleFileDialog {
             input_text.setText(Default_File_Name);
             titleLayout.addView(input_text);
         }
-        //////////////////////////////////////////
-        // Set Views and Finish Dialog builder  //
-        //////////////////////////////////////////
+        // Set Views and Finish Dialog builder
         dialogBuilder.setView(titleLayout);
         dialogBuilder.setCustomTitle(titleLayout1);
         m_listAdapter = createListAdapter(listItems);
