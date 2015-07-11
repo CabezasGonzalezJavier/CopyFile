@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.javiergonzalez.exercise.R;
+import com.javiergonzalez.exercise.interfaces.DateListener;
 
 import java.util.List;
 

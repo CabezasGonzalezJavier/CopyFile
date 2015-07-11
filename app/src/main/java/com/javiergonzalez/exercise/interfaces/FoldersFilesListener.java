@@ -1,4 +1,4 @@
-package com.javiergonzalez.exercise;
+package com.javiergonzalez.exercise.interfaces;
 
 import java.util.List;
 

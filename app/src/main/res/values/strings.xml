@@ -1,8 +1,20 @@
 <resources>
     <string name="app_name">Exercise</string>
 
+    <string-array name="cases">
+        <item>Quantity</item>
+        <item>Visual Condition</item>
+        <item>Visual Condition Note</item>
+        <item>Observations</item>
+        <item>Install Date</item>
+        <item>Manufacturer</item>
+        <item>Model</item>
+        <item>Serial Number</item>
+    </string-array>
+
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_task1">Task1</string>
+    <string name="action_task2">Task2</string>
     
     <string name="origin">Origin</string>
     <string name="destination">Destination</string>
@@ -10,4 +22,10 @@
     <string name="copy">Copy</string>
 
     <string name="error">You must choose file origin and file destination</string>
+    <string name="title_activity_dialog_activity2">DialogActivity</string>
+    
+    <string name="activity_dialog_edit">Edit</string>
+    <string name="activity_dialog_not_set">No set</string>
+
+    <string name="row_list_signin_save">Save</string>
 </resources>

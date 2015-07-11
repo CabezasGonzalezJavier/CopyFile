@@ -1,6 +1,17 @@
 package com.javiergonzalez.exercise.utils;
 
-import com.javiergonzalez.exercise.FoldersFilesListener;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.javiergonzalez.exercise.R;
+import com.javiergonzalez.exercise.interfaces.FoldersFilesListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -93,4 +104,6 @@ public class Utils {
             }
         }).start();
     }
+
+
 }
